@@ -22,6 +22,8 @@ export const poolResults = async (
     }
 
     results = await response.json()
+    //sleep for 10 seconds
+    await new Promise(resolve => setTimeout(resolve, 5000))
   }
 
   if (!results) {

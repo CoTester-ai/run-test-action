@@ -29309,14 +29309,15 @@ async function run() {
             }
             return;
         }
-        const { testRunId } = (await response.json());
+        console.log('response', await response.json());
+        const { runId } = (await response.json());
         const octokit = github.getOctokit(githubToken, {}, plugin_rest_endpoint_methods_1.restEndpointMethods);
         await (0, notify_1.notifyAboutStart)(octokit, context.owner, context.repo, context.sha);
-        const results = await (0, poolResults_1.poolResults)(url, token, testRunId);
+        const results = await (0, poolResults_1.poolResults)(url, token, runId);
         (0, makeComment_1.makeComment)(octokit, {
             prId: issueNumber,
             commitSha: context.sha,
-            testRunId: testRunId,
+            testRunId: runId,
             owner: context.owner,
             repo: context.repo,
             results: results
@@ -29474,6 +29475,8 @@ const poolResults = async (url, token, testRunId) => {
             throw new Error(`response not ok ${response.status} ${await response.text()}`);
         }
         results = await response.json();
+        //sleep for 10 seconds
+        await new Promise(resolve => setTimeout(resolve, 5000));
     }
     if (!results) {
         throw new Error('No results found');

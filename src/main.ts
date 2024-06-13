@@ -109,17 +109,19 @@ export async function run(): Promise<void> {
       return
     }
 
-    const { testRunId } = (await response.json()) as { testRunId: string }
+    console.log('response', await response.json())
+
+    const { runId } = (await response.json()) as { runId: string }
 
     const octokit = github.getOctokit(githubToken, {}, restEndpointMethods)
     await notifyAboutStart(octokit, context.owner, context.repo, context.sha)
 
-    const results = await poolResults(url, token, testRunId)
+    const results = await poolResults(url, token, runId)
 
     makeComment(octokit, {
       prId: issueNumber,
       commitSha: context.sha,
-      testRunId: testRunId,
+      testRunId: runId,
       owner: context.owner,
       repo: context.repo,
       results: results
