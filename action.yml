@@ -12,10 +12,12 @@ inputs:
     description: 'Project name in cotester.ai'
     required: true
   include:
-    description: 'Set of include tags to trigger tests. Default all'
+    description:
+      'Set of include tags separated by comma to trigger tests. Default all'
     required: false
   exclude:
-    description: 'Set of exclude tags to trigger tests. Default none'
+    description:
+      'Set of exclude tags separated by comma to trigger tests. Default none'
     required: false
 runs:
   using: 'node20'

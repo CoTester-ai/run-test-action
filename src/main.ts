@@ -22,8 +22,13 @@ export async function run(): Promise<void> {
       core.setFailed('testTargetId is set to an empty string')
     }
 
-    const include = core.getInput('include')
-    const exclude = core.getInput('exclude')
+    let includeString = core.getInput('include')
+    if (includeString.length === 0) {
+      includeString = 'all'
+    }
+    const include = includeString.split(',').map(s => s.trim())
+    let excludeString = core.getInput('exclude')
+    const exclude = excludeString.split(',').map(s => s.trim())
     let url = core.getInput('url')
 
     if (url.length === 0) {
