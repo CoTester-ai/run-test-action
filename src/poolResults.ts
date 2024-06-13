@@ -16,7 +16,9 @@ export const poolResults = async (
       method: 'GET'
     })
     if (!response.ok) {
-      throw new Error(`response not ok ${response.status}`)
+      throw new Error(
+        `response not ok ${response.status} ${await response.json()}`
+      )
     }
 
     results = await response.json()
