@@ -29461,11 +29461,19 @@ exports.notifyAboutStart = notifyAboutStart;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.poolResults = void 0;
+const poll = async (func, condition, interval, timeout) => {
+    if (timeout <= 0) {
+        throw new Error('Timeout');
+    }
+    const res = await func();
+    if (condition(res)) {
+        return res;
+    }
+    await new Promise(resolve => setTimeout(resolve, interval));
+    return poll(func, condition, interval, timeout - interval);
+};
 const poolResults = async (url, token, testRunId) => {
-    let results = undefined;
-    let tries = 0;
-    // Poll the results until they are ready or we have tried 60 times
-    while (results === undefined || results.processing || tries < 60) {
+    const results = await poll(async () => {
         const response = await fetch(`${url}/api/v1/runs/?runId=${testRunId}`, {
             headers: {
                 'Content-Type': 'application/json',
@@ -29476,11 +29484,8 @@ const poolResults = async (url, token, testRunId) => {
         if (!response.ok) {
             throw new Error(`response not ok ${response.status} ${await response.json()}`);
         }
-        results = await response.json();
-        //sleep for 10 seconds
-        await new Promise(resolve => setTimeout(resolve, 10 * 1000));
-        tries++;
-    }
+        return await response.json();
+    }, res => res !== undefined && !res.processing, 30000, 10 * 60 * 1000);
     if (!results) {
         throw new Error('No results found');
     }
