@@ -60,7 +60,3 @@ jobs:
           token: 'test'
           project: 'cotester-ai'
           url: 'https://exciting-wombat-158.convex.site'
-
-      - name: Print Output
-        id: output
-        run: echo "${{ steps.test-action.outputs.time }}"
