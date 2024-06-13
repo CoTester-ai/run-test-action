@@ -29252,6 +29252,7 @@ async function run() {
             url = 'https://frugal-corgi-830.convex.site';
         }
         console.log(token, include, exclude, project);
+        console.log(github_1.default.context);
         const issueNumber = github_1.default.context.issue.number;
         if (!issueNumber || issueNumber < 1) {
             core.warning('issue.number variable (Pull Request ID) not available. ' +

@@ -31,6 +31,7 @@ export async function run(): Promise<void> {
     }
 
     console.log(token, include, exclude, project)
+    console.log(github.context)
 
     const issueNumber = github.context.issue.number
     if (!issueNumber || issueNumber < 1) {
