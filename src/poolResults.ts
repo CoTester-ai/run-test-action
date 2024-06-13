@@ -7,7 +7,10 @@ export const poolResults = async (
 ): Promise<TestResults> => {
   let results: (TestResults & { processing: boolean }) | undefined = undefined
 
-  while (results === undefined || results.processing) {
+  let tries = 0
+
+  // Poll the results until they are ready or we have tried 60 times
+  while (results === undefined || results.processing || tries < 60) {
     const response = await fetch(`${url}/api/v1/runs/?runId=${testRunId}`, {
       headers: {
         'Content-Type': 'application/json',
@@ -23,7 +26,8 @@ export const poolResults = async (
 
     results = await response.json()
     //sleep for 10 seconds
-    await new Promise(resolve => setTimeout(resolve, 5000))
+    await new Promise(resolve => setTimeout(resolve, 10 * 1000))
+    tries++
   }
 
   if (!results) {
