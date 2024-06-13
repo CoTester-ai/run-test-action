@@ -1,24 +1,27 @@
-name: 'The name of your action here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
-
-# Add your action's branding here. This will appear on the GitHub Marketplace.
-branding:
-  icon: 'heart'
-  color: 'red'
-
-# Define your inputs here.
+name: 'coTester.ai - trigger tests in github'
+description: 'Trigger coTester.ai tests in github actions'
+author: 'coTester.ai'
 inputs:
-  milliseconds:
-    description: 'Your input description here'
+  url:
+    description: 'Url of the cotester.ai instance. Needs for debug'
+    required: false
+  token:
+    description: 'Token to authenticate with coTester.ai'
     required: true
-    default: '1000'
-
-# Define your outputs here.
-outputs:
-  time:
-    description: 'Your output description here'
-
+  project:
+    description: 'Project name in cotester.ai'
+    required: true
+  include:
+    description:
+      'Set of include tags separated by comma to trigger tests. Default all'
+    required: false
+  exclude:
+    description:
+      'Set of exclude tags separated by comma to trigger tests. Default none'
+    required: false
+  github-token:
+    description: 'Github token to authenticate with github'
+    required: true
 runs:
-  using: node20
-  main: dist/index.js
+  using: 'node20'
+  main: 'dist/index.js'
