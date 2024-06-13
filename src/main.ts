@@ -52,7 +52,7 @@ export async function run(): Promise<void> {
 
     core.debug(JSON.stringify({ executeUrl, context }, null, 2))
 
-    var response: Response
+    let response: Response
 
     try {
       response = await fetch(executeUrl, {

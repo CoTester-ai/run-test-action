@@ -5,9 +5,9 @@ export const poolResults = async (
   token: string,
   testRunId: string
 ): Promise<TestResults> => {
-  var results: (TestResults & { processing: boolean }) | undefined = undefined
+  let results: (TestResults & { processing: boolean }) | undefined = undefined
 
-  while (true) {
+  while (results === undefined || results.processing) {
     const response = await fetch(`${url}/api/v1/runs/${testRunId}`, {
       headers: {
         'Content-Type': 'application/json',
@@ -20,12 +20,6 @@ export const poolResults = async (
     }
 
     results = await response.json()
-    if (!results) {
-      continue
-    }
-    if (!results.processing) {
-      break
-    }
   }
 
   if (!results) {

@@ -1,17 +1,6 @@
-import { exit } from 'process'
 // @ts-ignore
 import { Octokit } from '@octokit/core'
 import { TestResults } from './models'
-
-const APP_ID = process.env.E2E_REPORTER_GITHUB_APP_ID
-const PRIVATE_KEY = process.env.E2E_REPORTER_GITHUB_APP_PRIVATE_TOKEN
-
-if (!APP_ID || !PRIVATE_KEY) {
-  console.error(
-    'E2E_REPORTER_GITHUB_APP_ID and E2E_REPORTER_GITHUB_APP_PRIVATE_TOKEN must be set'
-  )
-  exit(1)
-}
 
 export type Args = {
   prId: number

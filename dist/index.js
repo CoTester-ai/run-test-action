@@ -29267,7 +29267,7 @@ async function run() {
             sha: github_1.default.context.sha
         };
         core.debug(JSON.stringify({ executeUrl, context }, null, 2));
-        var response;
+        let response;
         try {
             response = await fetch(executeUrl, {
                 headers: {
@@ -29330,19 +29330,12 @@ exports.run = run;
 /***/ }),
 
 /***/ 142:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+/***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.minimizePreviousComments = exports.makeComment = void 0;
-const process_1 = __nccwpck_require__(7282);
-const APP_ID = process.env.E2E_REPORTER_GITHUB_APP_ID;
-const PRIVATE_KEY = process.env.E2E_REPORTER_GITHUB_APP_PRIVATE_TOKEN;
-if (!APP_ID || !PRIVATE_KEY) {
-    console.error('E2E_REPORTER_GITHUB_APP_ID and E2E_REPORTER_GITHUB_APP_PRIVATE_TOKEN must be set');
-    (0, process_1.exit)(1);
-}
 // @ts-ignore
 const makeComment = async (octokit, args) => {
     const { results } = args;
@@ -29468,8 +29461,8 @@ exports.notifyAboutStart = notifyAboutStart;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.poolResults = void 0;
 const poolResults = async (url, token, testRunId) => {
-    var results = undefined;
-    while (true) {
+    let results = undefined;
+    while (results === undefined || results.processing) {
         const response = await fetch(`${url}/api/v1/runs/${testRunId}`, {
             headers: {
                 'Content-Type': 'application/json',
@@ -29481,12 +29474,6 @@ const poolResults = async (url, token, testRunId) => {
             throw new Error(`response not ok ${response.status}`);
         }
         results = await response.json();
-        if (!results) {
-            continue;
-        }
-        if (!results.processing) {
-            break;
-        }
     }
     if (!results) {
         throw new Error('No results found');
@@ -29639,14 +29626,6 @@ module.exports = require("path");
 
 "use strict";
 module.exports = require("perf_hooks");
-
-/***/ }),
-
-/***/ 7282:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("process");
 
 /***/ }),
 
