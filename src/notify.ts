@@ -1,5 +1,5 @@
-// @ts-ignore
 export const notifyAboutStart = async (
+  // @ts-ignore
   octokit,
   owner: string,
   repo: string,

@@ -23,7 +23,7 @@ export type Args = {
 }
 
 // @ts-ignore
-export const makeComment = async (octokit, args: Args) => {
+export const makeComment = async (octokit: Octokit, args: Args) => {
   const { results } = args
   const approve = results.failed === 0
   let message
@@ -56,8 +56,8 @@ ${tableContent}
   return message
 }
 
-// @ts-ignore
 const sendMessage = async (
+  // @ts-ignore
   octokit,
   message: string,
   approve: boolean,
@@ -112,8 +112,8 @@ export const minimizePreviousComments = async (
     pull_number: Number(prId)
   })
 
-  // @ts-ignore
   const comments =
+    // @ts-ignore
     commentsResponse.repository.pullRequest.comments.nodes.filter(
       // @ts-ignore
       comment =>
