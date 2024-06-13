@@ -29313,7 +29313,7 @@ async function run() {
         const octokit = github.getOctokit(githubToken, {}, plugin_rest_endpoint_methods_1.restEndpointMethods);
         await (0, notify_1.notifyAboutStart)(octokit, context.owner, context.repo, context.sha);
         const results = await (0, poolResults_1.poolResults)(url, token, runId);
-        (0, makeComment_1.makeComment)(octokit, {
+        await (0, makeComment_1.makeComment)(octokit, {
             prId: issueNumber,
             commitSha: context.sha,
             testRunId: runId,
@@ -29372,13 +29372,14 @@ ${tableContent}
 const sendMessage = async (octokit, message, approve, args) => {
     const { prId, owner, repo, commitSha } = args;
     await (0, exports.minimizePreviousComments)(octokit, args);
-    octokit.rest.issues.createComment({
+    const commentResult = await octokit.rest.issues.createComment({
         issue_number: prId,
         owner: owner,
         repo: repo,
         body: message
     });
-    octokit.rest.checks.create({
+    console.log('commentResult: ', commentResult);
+    const checksResult = await octokit.rest.checks.create({
         owner: owner,
         repo: repo,
         name: 'E2E tests',
@@ -29386,6 +29387,7 @@ const sendMessage = async (octokit, message, approve, args) => {
         status: 'completed',
         conclusion: approve ? 'success' : 'failure'
     });
+    console.log('checksResult: ', checksResult);
 };
 const minimizePreviousComments = async (octokit, { owner, repo, prId }) => {
     const queryComments = `
@@ -29441,13 +29443,14 @@ exports.minimizePreviousComments = minimizePreviousComments;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.notifyAboutStart = void 0;
 const notifyAboutStart = async (octokit, owner, repo, commitSha) => {
-    await octokit.rest.checks.create({
+    const result = await octokit.rest.checks.create({
         owner: owner,
         repo: repo,
         name: 'E2E tests',
         head_sha: commitSha,
         status: 'in_progress'
     });
+    console.log('result: ', result);
 };
 exports.notifyAboutStart = notifyAboutStart;
 

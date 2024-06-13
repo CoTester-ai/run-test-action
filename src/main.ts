@@ -116,7 +116,7 @@ export async function run(): Promise<void> {
 
     const results = await poolResults(url, token, runId)
 
-    makeComment(octokit, {
+    await makeComment(octokit, {
       prId: issueNumber,
       commitSha: context.sha,
       testRunId: runId,
