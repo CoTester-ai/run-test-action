@@ -15,7 +15,7 @@ export type Args = {
 export const makeComment = async (octokit: Octokit, args: Args) => {
   const { results } = args
   const approve = results.failed === 0
-  let message
+  let message: string
   if (approve) {
     message =
       'All tests passed successfully :white_check_mark: (Jobs are not included in this run)'
