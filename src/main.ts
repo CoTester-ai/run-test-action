@@ -109,8 +109,6 @@ export async function run(): Promise<void> {
       return
     }
 
-    console.log('response', await response.json())
-
     const { runId } = (await response.json()) as { runId: string }
 
     const octokit = github.getOctokit(githubToken, {}, restEndpointMethods)

@@ -29309,7 +29309,6 @@ async function run() {
             }
             return;
         }
-        console.log('response', await response.json());
         const { runId } = (await response.json());
         const octokit = github.getOctokit(githubToken, {}, plugin_rest_endpoint_methods_1.restEndpointMethods);
         await (0, notify_1.notifyAboutStart)(octokit, context.owner, context.repo, context.sha);
