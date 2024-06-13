@@ -30,6 +30,7 @@ export async function run(): Promise<void> {
     const excludeString = core.getInput('exclude')
     const exclude = excludeString.split(',').map(s => s.trim())
     let url = core.getInput('url')
+    const githubToken = core.getInput('github-token')
 
     if (url.length === 0) {
       url = 'https://frugal-corgi-830.convex.site'
@@ -110,7 +111,7 @@ export async function run(): Promise<void> {
 
     const { testRunId } = (await response.json()) as { testRunId: string }
 
-    const octokit = github.getOctokit(token, {}, restEndpointMethods)
+    const octokit = github.getOctokit(githubToken, {}, restEndpointMethods)
     await notifyAboutStart(octokit, context.owner, context.repo, context.sha)
 
     const results = await poolResults(url, token, testRunId)

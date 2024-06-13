@@ -29250,6 +29250,7 @@ async function run() {
         const excludeString = core.getInput('exclude');
         const exclude = excludeString.split(',').map(s => s.trim());
         let url = core.getInput('url');
+        const githubToken = core.getInput('github-token');
         if (url.length === 0) {
             url = 'https://frugal-corgi-830.convex.site';
         }
@@ -29309,7 +29310,7 @@ async function run() {
             return;
         }
         const { testRunId } = (await response.json());
-        const octokit = github.getOctokit(token, {}, plugin_rest_endpoint_methods_1.restEndpointMethods);
+        const octokit = github.getOctokit(githubToken, {}, plugin_rest_endpoint_methods_1.restEndpointMethods);
         await (0, notify_1.notifyAboutStart)(octokit, context.owner, context.repo, context.sha);
         const results = await (0, poolResults_1.poolResults)(url, token, testRunId);
         (0, makeComment_1.makeComment)(octokit, {
