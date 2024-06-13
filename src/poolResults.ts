@@ -17,7 +17,7 @@ export const poolResults = async (
     })
     if (!response.ok) {
       throw new Error(
-        `response not ok ${response.status} ${await response.text()}`
+        `response not ok ${response.status} ${await response.json()}`
       )
     }
 

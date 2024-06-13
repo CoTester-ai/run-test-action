@@ -29472,7 +29472,7 @@ const poolResults = async (url, token, testRunId) => {
             method: 'GET'
         });
         if (!response.ok) {
-            throw new Error(`response not ok ${response.status} ${await response.text()}`);
+            throw new Error(`response not ok ${response.status} ${await response.json()}`);
         }
         results = await response.json();
         //sleep for 10 seconds
