@@ -29414,7 +29414,7 @@ const minimizePreviousComments = async (octokit, { owner, repo, prId }) => {
     // @ts-ignore
     commentsResponse.repository.pullRequest.comments.nodes.filter(
     // @ts-ignore
-    comment => comment.author.login === 'e2e-tests-reporter' && !comment.isMinimized);
+    comment => comment.author.login === 'github-actions' && !comment.isMinimized);
     for (const comment of comments) {
         const query = `
             mutation minimizeComment($id: ID!) {

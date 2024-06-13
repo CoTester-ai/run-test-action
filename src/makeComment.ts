@@ -108,7 +108,7 @@ export const minimizePreviousComments = async (
     commentsResponse.repository.pullRequest.comments.nodes.filter(
       // @ts-ignore
       comment =>
-        comment.author.login === 'e2e-tests-reporter' && !comment.isMinimized
+        comment.author.login === 'github-actions' && !comment.isMinimized
     )
 
   for (const comment of comments) {
