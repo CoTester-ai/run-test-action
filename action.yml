@@ -19,6 +19,9 @@ inputs:
     description:
       'Set of exclude tags separated by comma to trigger tests. Default none'
     required: false
+  github-token:
+    description: 'Github token to authenticate with github'
+    required: true
 runs:
   using: 'node20'
   main: 'dist/index.js'
