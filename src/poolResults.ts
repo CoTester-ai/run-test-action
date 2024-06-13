@@ -8,7 +8,7 @@ export const poolResults = async (
   let results: (TestResults & { processing: boolean }) | undefined = undefined
 
   while (results === undefined || results.processing) {
-    const response = await fetch(`${url}/api/v1/runs/${testRunId}`, {
+    const response = await fetch(`${url}/api/v1/runs/runId=${testRunId}`, {
       headers: {
         'Content-Type': 'application/json',
         'x-api-key': token

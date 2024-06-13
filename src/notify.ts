@@ -1,11 +1,12 @@
+import { GitHub } from '@actions/github/lib/utils'
+
 export const notifyAboutStart = async (
-  // @ts-ignore
-  octokit,
+  octokit: InstanceType<typeof GitHub>,
   owner: string,
   repo: string,
   commitSha: string
 ) => {
-  octokit.rest.checks.create({
+  await octokit.rest.checks.create({
     owner: owner,
     repo: repo,
     name: 'E2E tests',

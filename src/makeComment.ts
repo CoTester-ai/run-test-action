@@ -1,6 +1,6 @@
 // @ts-ignore
-import { Octokit } from '@octokit/core'
 import { TestResults } from './models'
+import { GitHub } from '@actions/github/lib/utils'
 
 export type Args = {
   prId: number
@@ -12,7 +12,10 @@ export type Args = {
 }
 
 // @ts-ignore
-export const makeComment = async (octokit: Octokit, args: Args) => {
+export const makeComment = async (
+  octokit: InstanceType<typeof GitHub>,
+  args: Args
+) => {
   const { results } = args
   const approve = results.failed === 0
   let message: string
@@ -46,8 +49,7 @@ ${tableContent}
 }
 
 const sendMessage = async (
-  // @ts-ignore
-  octokit,
+  octokit: InstanceType<typeof GitHub>,
   message: string,
   approve: boolean,
   args: Args
@@ -73,7 +75,7 @@ const sendMessage = async (
 }
 
 export const minimizePreviousComments = async (
-  octokit: Octokit,
+  octokit: InstanceType<typeof GitHub>,
   { owner, repo, prId }: Args
 ) => {
   const queryComments = `

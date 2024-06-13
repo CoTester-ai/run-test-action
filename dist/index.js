@@ -29368,9 +29368,7 @@ ${tableContent}
 `;
     return message;
 };
-const sendMessage = async (
-// @ts-ignore
-octokit, message, approve, args) => {
+const sendMessage = async (octokit, message, approve, args) => {
     const { prId, owner, repo, commitSha } = args;
     await (0, exports.minimizePreviousComments)(octokit, args);
     octokit.rest.issues.createComment({
@@ -29441,10 +29439,8 @@ exports.minimizePreviousComments = minimizePreviousComments;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.notifyAboutStart = void 0;
-const notifyAboutStart = async (
-// @ts-ignore
-octokit, owner, repo, commitSha) => {
-    octokit.rest.checks.create({
+const notifyAboutStart = async (octokit, owner, repo, commitSha) => {
+    await octokit.rest.checks.create({
         owner: owner,
         repo: repo,
         name: 'E2E tests',
@@ -29467,7 +29463,7 @@ exports.poolResults = void 0;
 const poolResults = async (url, token, testRunId) => {
     let results = undefined;
     while (results === undefined || results.processing) {
-        const response = await fetch(`${url}/api/v1/runs/${testRunId}`, {
+        const response = await fetch(`${url}/api/v1/runs/runId=${testRunId}`, {
             headers: {
                 'Content-Type': 'application/json',
                 'x-api-key': token
