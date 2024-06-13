@@ -29220,13 +29220,10 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.run = void 0;
 const core = __importStar(__nccwpck_require__(2186));
-const github_1 = __importDefault(__nccwpck_require__(5438));
+const github = __importStar(__nccwpck_require__(5438));
 const notify_1 = __nccwpck_require__(3822);
 const poolResults_1 = __nccwpck_require__(5413);
 const makeComment_1 = __nccwpck_require__(142);
@@ -29252,8 +29249,8 @@ async function run() {
             url = 'https://frugal-corgi-830.convex.site';
         }
         console.log(token, include, exclude, project);
-        console.log(github_1.default);
-        const issueNumber = github_1.default.context.issue.number;
+        console.log(github);
+        const issueNumber = github.context.issue.number;
         if (!issueNumber || issueNumber < 1) {
             core.warning('issue.number variable (Pull Request ID) not available. ' +
                 'Make sure you run this action in a workflow triggered by pull request ' +
@@ -29262,10 +29259,10 @@ async function run() {
         const executeUrl = `${url}/api/v1/runs`;
         const context = {
             issueNumber,
-            repo: github_1.default.context.repo.repo,
-            owner: github_1.default.context.repo.owner,
-            ref: github_1.default.context.ref,
-            sha: github_1.default.context.sha
+            repo: github.context.repo.repo,
+            owner: github.context.repo.owner,
+            ref: github.context.ref,
+            sha: github.context.sha
         };
         core.debug(JSON.stringify({ executeUrl, context }, null, 2));
         let response;
@@ -29307,7 +29304,7 @@ async function run() {
             return;
         }
         const { testRunId } = (await response.json());
-        const octokit = github_1.default.getOctokit(token, {}, plugin_rest_endpoint_methods_1.restEndpointMethods);
+        const octokit = github.getOctokit(token, {}, plugin_rest_endpoint_methods_1.restEndpointMethods);
         await (0, notify_1.notifyAboutStart)(octokit, context.owner, context.repo, context.sha);
         const results = await (0, poolResults_1.poolResults)(url, token, testRunId);
         (0, makeComment_1.makeComment)(octokit, {
