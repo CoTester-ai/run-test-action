@@ -51,7 +51,7 @@ export async function run(): Promise<void> {
       repo: github.context.repo.repo,
       owner: github.context.repo.owner,
       ref: github.context.ref,
-      sha: github.context.sha
+      sha: github.context.payload.pull_request?.head.sha
     }
 
     core.debug(JSON.stringify({ executeUrl, context }, null, 2))
