@@ -27,7 +27,7 @@ export async function run(): Promise<void> {
       includeString = 'all'
     }
     const include = includeString.split(',').map(s => s.trim())
-    let excludeString = core.getInput('exclude')
+    const excludeString = core.getInput('exclude')
     const exclude = excludeString.split(',').map(s => s.trim())
     let url = core.getInput('url')
 
