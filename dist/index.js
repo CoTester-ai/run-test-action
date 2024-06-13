@@ -29463,7 +29463,7 @@ exports.poolResults = void 0;
 const poolResults = async (url, token, testRunId) => {
     let results = undefined;
     while (results === undefined || results.processing) {
-        const response = await fetch(`${url}/api/v1/runs/runId=${testRunId}`, {
+        const response = await fetch(`${url}/api/v1/runs/?runId=${testRunId}`, {
             headers: {
                 'Content-Type': 'application/json',
                 'x-api-key': token
@@ -29471,7 +29471,7 @@ const poolResults = async (url, token, testRunId) => {
             method: 'GET'
         });
         if (!response.ok) {
-            throw new Error(`response not ok ${response.status} ${await response.json()}`);
+            throw new Error(`response not ok ${response.status} ${await response.text()}`);
         }
         results = await response.json();
     }
