@@ -1,66 +1,77 @@
-import { exit } from 'process';
+import { exit } from 'process'
 // @ts-ignore
-import { Octokit } from "@octokit/core";
-import { TestResults } from './models';
+import { Octokit } from '@octokit/core'
+import { TestResults } from './models'
 
-const APP_ID = process.env.E2E_REPORTER_GITHUB_APP_ID;
-const PRIVATE_KEY = process.env.E2E_REPORTER_GITHUB_APP_PRIVATE_TOKEN;
+const APP_ID = process.env.E2E_REPORTER_GITHUB_APP_ID
+const PRIVATE_KEY = process.env.E2E_REPORTER_GITHUB_APP_PRIVATE_TOKEN
 
 if (!APP_ID || !PRIVATE_KEY) {
-  console.error('E2E_REPORTER_GITHUB_APP_ID and E2E_REPORTER_GITHUB_APP_PRIVATE_TOKEN must be set');
-  exit(1);
+  console.error(
+    'E2E_REPORTER_GITHUB_APP_ID and E2E_REPORTER_GITHUB_APP_PRIVATE_TOKEN must be set'
+  )
+  exit(1)
 }
 
 export type Args = {
-  prId: number;
-  commitSha: string;
-  testRunId: string;
-  owner: string;
-  repo: string;
-  results: TestResults;
+  prId: number
+  commitSha: string
+  testRunId: string
+  owner: string
+  repo: string
+  results: TestResults
 }
 
 // @ts-ignore
 export const makeComment = async (octokit, args: Args) => {
   const { results } = args
-  const approve = results.failed === 0;
-  let message;
+  const approve = results.failed === 0
+  let message
   if (approve) {
-    message = 'All tests passed successfully :white_check_mark: (Jobs are not included in this run)';
+    message =
+      'All tests passed successfully :white_check_mark: (Jobs are not included in this run)'
   } else {
-    message = await createMessage(args);
+    message = await createMessage(args)
   }
 
-  await sendMessage(octokit, message, approve, args);
+  await sendMessage(octokit, message, approve, args)
 }
 
 const createMessage = async (args: Args) => {
-  const reportUrl = args.results.link;
+  const reportUrl = args.results.link
 
   const tableContent = args.results.tests
-    .map((test) => `| ${test.name} | ${test.message} | ${test.traceUrl ? `[click](${test.traceUrl})` : '-'} |`)
-    .join('\n');
+    .map(
+      test =>
+        `| ${test.name} | ${test.message} | ${test.traceUrl ? `[click](${test.traceUrl})` : '-'} |`
+    )
+    .join('\n')
   const message = `[Test report](${reportUrl}): ${args.results.failed}/${args.results.total} failed :rotating_light:
 
 | Test  | Message | Trace |
 | ------------- | ------------- | ------------- |
 ${tableContent}
-`;
+`
 
-  return message;
+  return message
 }
 
 // @ts-ignore
-const sendMessage = async (octokit, message: string, approve: boolean, args: Args) => {
+const sendMessage = async (
+  octokit,
+  message: string,
+  approve: boolean,
+  args: Args
+) => {
   const { prId, owner, repo, commitSha } = args
 
-  await minimizePreviousComments(octokit, args);
+  await minimizePreviousComments(octokit, args)
   octokit.rest.issues.createComment({
     issue_number: prId,
     owner: owner,
     repo: repo,
-    body: message,
-  });
+    body: message
+  })
 
   octokit.rest.checks.create({
     owner: owner,
@@ -68,11 +79,14 @@ const sendMessage = async (octokit, message: string, approve: boolean, args: Arg
     name: 'E2E tests',
     head_sha: commitSha,
     status: 'completed',
-    conclusion: approve ? 'success' : 'failure',
-  });
+    conclusion: approve ? 'success' : 'failure'
+  })
 }
 
-export const minimizePreviousComments = async (octokit: Octokit, { owner, repo, prId }: Args) => {
+export const minimizePreviousComments = async (
+  octokit: Octokit,
+  { owner, repo, prId }: Args
+) => {
   const queryComments = `
     query comments($owner: String!, $repo: String!, $pull_number: Int!) {
       repository(owner: $owner, name: $repo) {
@@ -91,18 +105,20 @@ export const minimizePreviousComments = async (octokit: Octokit, { owner, repo, 
         }
       }
     }
-  `;
+  `
   const commentsResponse = await octokit.graphql(queryComments, {
     owner: owner,
     repo: repo,
-    pull_number: Number(prId),
-  });
+    pull_number: Number(prId)
+  })
 
   // @ts-ignore
-  const comments = commentsResponse.repository.pullRequest.comments.nodes.filter(
-    // @ts-ignore
-    (comment) => comment.author.login === 'e2e-tests-reporter' && !comment.isMinimized
-  );
+  const comments =
+    commentsResponse.repository.pullRequest.comments.nodes.filter(
+      // @ts-ignore
+      comment =>
+        comment.author.login === 'e2e-tests-reporter' && !comment.isMinimized
+    )
 
   for (const comment of comments) {
     const query = `
@@ -111,7 +127,7 @@ export const minimizePreviousComments = async (octokit: Octokit, { owner, repo, 
                 clientMutationId
             }
             }
-        `;
-    await octokit.graphql(query, { id: comment.id });
+        `
+    await octokit.graphql(query, { id: comment.id })
   }
 }
