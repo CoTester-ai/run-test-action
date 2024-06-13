@@ -57,15 +57,14 @@ const sendMessage = async (
   const { prId, owner, repo, commitSha } = args
 
   await minimizePreviousComments(octokit, args)
-  const commentResult = await octokit.rest.issues.createComment({
+  await octokit.rest.issues.createComment({
     issue_number: prId,
     owner: owner,
     repo: repo,
     body: message
   })
-  console.log('commentResult: ', commentResult)
 
-  const checksResult = await octokit.rest.checks.create({
+  await octokit.rest.checks.create({
     owner: owner,
     repo: repo,
     name: 'E2E tests',
@@ -73,7 +72,6 @@ const sendMessage = async (
     status: 'completed',
     conclusion: approve ? 'success' : 'failure'
   })
-  console.log('checksResult: ', checksResult)
 }
 
 export const minimizePreviousComments = async (

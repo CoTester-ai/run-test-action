@@ -6,12 +6,11 @@ export const notifyAboutStart = async (
   repo: string,
   commitSha: string
 ) => {
-  const result = await octokit.rest.checks.create({
+  await octokit.rest.checks.create({
     owner: owner,
     repo: repo,
     name: 'E2E tests',
     head_sha: commitSha,
     status: 'in_progress'
   })
-  console.log('result: ', result)
 }

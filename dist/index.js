@@ -29254,8 +29254,6 @@ async function run() {
         if (url.length === 0) {
             url = 'https://frugal-corgi-830.convex.site';
         }
-        console.log(token, include, exclude, project);
-        console.log(github);
         const issueNumber = github.context.issue.number;
         if (!issueNumber || issueNumber < 1) {
             core.warning('issue.number variable (Pull Request ID) not available. ' +
@@ -29372,14 +29370,13 @@ ${tableContent}
 const sendMessage = async (octokit, message, approve, args) => {
     const { prId, owner, repo, commitSha } = args;
     await (0, exports.minimizePreviousComments)(octokit, args);
-    const commentResult = await octokit.rest.issues.createComment({
+    await octokit.rest.issues.createComment({
         issue_number: prId,
         owner: owner,
         repo: repo,
         body: message
     });
-    console.log('commentResult: ', commentResult);
-    const checksResult = await octokit.rest.checks.create({
+    await octokit.rest.checks.create({
         owner: owner,
         repo: repo,
         name: 'E2E tests',
@@ -29387,7 +29384,6 @@ const sendMessage = async (octokit, message, approve, args) => {
         status: 'completed',
         conclusion: approve ? 'success' : 'failure'
     });
-    console.log('checksResult: ', checksResult);
 };
 const minimizePreviousComments = async (octokit, { owner, repo, prId }) => {
     const queryComments = `
@@ -29443,14 +29439,13 @@ exports.minimizePreviousComments = minimizePreviousComments;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.notifyAboutStart = void 0;
 const notifyAboutStart = async (octokit, owner, repo, commitSha) => {
-    const result = await octokit.rest.checks.create({
+    await octokit.rest.checks.create({
         owner: owner,
         repo: repo,
         name: 'E2E tests',
         head_sha: commitSha,
         status: 'in_progress'
     });
-    console.log('result: ', result);
 };
 exports.notifyAboutStart = notifyAboutStart;
 

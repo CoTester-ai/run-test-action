@@ -36,9 +36,6 @@ export async function run(): Promise<void> {
       url = 'https://frugal-corgi-830.convex.site'
     }
 
-    console.log(token, include, exclude, project)
-    console.log(github)
-
     const issueNumber = github.context.issue.number
     if (!issueNumber || issueNumber < 1) {
       core.warning(
