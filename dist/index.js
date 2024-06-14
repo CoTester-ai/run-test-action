@@ -29266,7 +29266,9 @@ async function run() {
             repo: github.context.repo.repo,
             owner: github.context.repo.owner,
             ref: github.context.ref,
-            sha: github.context.payload.pull_request?.head.sha
+            sha: github.context.payload.pull_request
+                ? github.context.payload.pull_request?.head.sha
+                : github.context.sha
         };
         core.debug(JSON.stringify({ executeUrl, context }, null, 2));
         let response;
