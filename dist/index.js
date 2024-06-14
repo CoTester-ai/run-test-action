@@ -29350,8 +29350,7 @@ const makeComment = async (octokit, args) => {
     const approve = results.failed === 0;
     let message;
     if (approve) {
-        message =
-            'All tests passed successfully :white_check_mark: (Jobs are not included in this run)';
+        message = 'All tests passed successfully :white_check_mark:';
     }
     else {
         message = await createMessage(args);
