@@ -29313,14 +29313,17 @@ async function run() {
         const octokit = github.getOctokit(githubToken, {}, plugin_rest_endpoint_methods_1.restEndpointMethods);
         await (0, notify_1.notifyAboutStart)(octokit, context.owner, context.repo, context.sha);
         const results = await (0, poolResults_1.poolResults)(url, token, runId);
-        await (0, makeComment_1.makeComment)(octokit, {
-            prId: issueNumber,
-            commitSha: context.sha,
-            testRunId: runId,
-            owner: context.owner,
-            repo: context.repo,
-            results: results
-        });
+        await (0, notify_1.notifyAboutEnd)(octokit, context.owner, context.repo, context.sha, results.failed === 0 ? 'success' : 'failure');
+        if (!issueNumber || issueNumber < 1) {
+            await (0, makeComment_1.makeComment)(octokit, {
+                prId: issueNumber,
+                commitSha: context.sha,
+                testRunId: runId,
+                owner: context.owner,
+                repo: context.repo,
+                results: results
+            });
+        }
     }
     catch (error) {
         console.error(error);
@@ -29353,7 +29356,7 @@ const makeComment = async (octokit, args) => {
     else {
         message = await createMessage(args);
     }
-    await sendMessage(octokit, message, approve, args);
+    await sendMessage(octokit, message, args);
 };
 exports.makeComment = makeComment;
 const createMessage = async (args) => {
@@ -29369,22 +29372,14 @@ ${tableContent}
 `;
     return message;
 };
-const sendMessage = async (octokit, message, approve, args) => {
-    const { prId, owner, repo, commitSha } = args;
+const sendMessage = async (octokit, message, args) => {
+    const { prId, owner, repo } = args;
     await (0, exports.minimizePreviousComments)(octokit, args);
     await octokit.rest.issues.createComment({
         issue_number: prId,
         owner: owner,
         repo: repo,
         body: message
-    });
-    await octokit.rest.checks.create({
-        owner: owner,
-        repo: repo,
-        name: 'E2E tests',
-        head_sha: commitSha,
-        status: 'completed',
-        conclusion: approve ? 'success' : 'failure'
     });
 };
 const minimizePreviousComments = async (octokit, { owner, repo, prId }) => {
@@ -29439,7 +29434,7 @@ exports.minimizePreviousComments = minimizePreviousComments;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.notifyAboutStart = void 0;
+exports.notifyAboutEnd = exports.notifyAboutStart = void 0;
 const notifyAboutStart = async (octokit, owner, repo, commitSha) => {
     await octokit.rest.checks.create({
         owner: owner,
@@ -29450,6 +29445,17 @@ const notifyAboutStart = async (octokit, owner, repo, commitSha) => {
     });
 };
 exports.notifyAboutStart = notifyAboutStart;
+const notifyAboutEnd = async (octokit, owner, repo, commitSha, conclusion) => {
+    await octokit.rest.checks.create({
+        owner: owner,
+        repo: repo,
+        name: 'E2E tests',
+        head_sha: commitSha,
+        status: 'completed',
+        conclusion: conclusion
+    });
+};
+exports.notifyAboutEnd = notifyAboutEnd;
 
 
 /***/ }),

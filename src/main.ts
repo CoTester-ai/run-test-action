@@ -1,7 +1,7 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
 
-import { notifyAboutStart } from './notify'
+import { notifyAboutEnd, notifyAboutStart } from './notify'
 import { poolResults } from './poolResults'
 import { makeComment } from './makeComment'
 import { restEndpointMethods } from '@octokit/plugin-rest-endpoint-methods'
@@ -115,14 +115,24 @@ export async function run(): Promise<void> {
 
     const results = await poolResults(url, token, runId)
 
-    await makeComment(octokit, {
-      prId: issueNumber,
-      commitSha: context.sha,
-      testRunId: runId,
-      owner: context.owner,
-      repo: context.repo,
-      results: results
-    })
+    await notifyAboutEnd(
+      octokit,
+      context.owner,
+      context.repo,
+      context.sha,
+      results.failed === 0 ? 'success' : 'failure'
+    )
+
+    if (!issueNumber || issueNumber < 1) {
+      await makeComment(octokit, {
+        prId: issueNumber,
+        commitSha: context.sha,
+        testRunId: runId,
+        owner: context.owner,
+        repo: context.repo,
+        results: results
+      })
+    }
   } catch (error) {
     console.error(error)
     // Fail the workflow run if an error occurs

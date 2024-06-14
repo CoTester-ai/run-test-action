@@ -26,7 +26,7 @@ export const makeComment = async (
     message = await createMessage(args)
   }
 
-  await sendMessage(octokit, message, approve, args)
+  await sendMessage(octokit, message, args)
 }
 
 const createMessage = async (args: Args) => {
@@ -51,10 +51,9 @@ ${tableContent}
 const sendMessage = async (
   octokit: InstanceType<typeof GitHub>,
   message: string,
-  approve: boolean,
   args: Args
 ) => {
-  const { prId, owner, repo, commitSha } = args
+  const { prId, owner, repo } = args
 
   await minimizePreviousComments(octokit, args)
   await octokit.rest.issues.createComment({
@@ -62,15 +61,6 @@ const sendMessage = async (
     owner: owner,
     repo: repo,
     body: message
-  })
-
-  await octokit.rest.checks.create({
-    owner: owner,
-    repo: repo,
-    name: 'E2E tests',
-    head_sha: commitSha,
-    status: 'completed',
-    conclusion: approve ? 'success' : 'failure'
   })
 }
 
