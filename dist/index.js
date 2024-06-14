@@ -29314,7 +29314,7 @@ async function run() {
         await (0, notify_1.notifyAboutStart)(octokit, context.owner, context.repo, context.sha);
         const results = await (0, poolResults_1.poolResults)(url, token, runId);
         await (0, notify_1.notifyAboutEnd)(octokit, context.owner, context.repo, context.sha, results.failed === 0 ? 'success' : 'failure');
-        if (!issueNumber || issueNumber < 1) {
+        if (issueNumber > 0) {
             await (0, makeComment_1.makeComment)(octokit, {
                 prId: issueNumber,
                 commitSha: context.sha,

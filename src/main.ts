@@ -123,7 +123,7 @@ export async function run(): Promise<void> {
       results.failed === 0 ? 'success' : 'failure'
     )
 
-    if (!issueNumber || issueNumber < 1) {
+    if (issueNumber > 0) {
       await makeComment(octokit, {
         prId: issueNumber,
         commitSha: context.sha,
