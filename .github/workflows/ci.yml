@@ -62,5 +62,4 @@ jobs:
         with:
           token: 'test'
           project: 'cotester-ai'
-          url: 'https://exciting-wombat-158.convex.site'
           github-token: ${{ secrets.GITHUB_TOKEN }}
