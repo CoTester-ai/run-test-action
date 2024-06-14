@@ -6,13 +6,14 @@
 [![CodeQL](https://github.com/actions/typescript-action/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/actions/typescript-action/actions/workflows/codeql-analysis.yml)
 [![Coverage](./badges/coverage.svg)](./badges/coverage.svg)
 
-
-
-This action triggers [CoTester.ai](https://app.cotester.ai) on pull request and merges.
+This action triggers [CoTester.ai](https://app.cotester.ai) on pull request and
+merges.
 
 ## Getting Started
 
-First of all you should create some tests on [cotester.ai](https://app.cotester.ai) and get your API token [here](https://app.cotester.ai/settings/integrations).
+First of all you should create some tests on
+[cotester.ai](https://app.cotester.ai) and get your API token
+[here](https://app.cotester.ai/settings/integrations).
 
 ```yaml
 - name: CoTester.ai
