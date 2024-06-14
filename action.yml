@@ -1,6 +1,8 @@
 name: 'coTester.ai - trigger tests in github'
 description: 'Trigger coTester.ai tests in github actions'
 author: 'coTester.ai'
+icon: 'check-circle'
+color: 'green'
 inputs:
   url:
     description: 'Url of the cotester.ai instance. Needs for debug'
