@@ -120,7 +120,8 @@ export async function run(): Promise<void> {
       context.owner,
       context.repo,
       context.sha,
-      results.failed === 0 ? 'success' : 'failure'
+      results.failed === 0 ? 'success' : 'failure',
+      results.link
     )
 
     if (issueNumber > 0) {

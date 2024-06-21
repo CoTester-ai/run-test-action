@@ -20,7 +20,8 @@ export const notifyAboutEnd = async (
   owner: string,
   repo: string,
   commitSha: string,
-  conclusion: 'success' | 'failure'
+  conclusion: 'success' | 'failure',
+  link: string
 ) => {
   await octokit.rest.checks.create({
     owner: owner,
@@ -28,6 +29,13 @@ export const notifyAboutEnd = async (
     name: 'E2E tests',
     head_sha: commitSha,
     status: 'completed',
-    conclusion: conclusion
+    conclusion: conclusion,
+    output: {
+      title: 'E2E tests',
+      summary:
+        conclusion === 'success'
+          ? 'All tests passed successfully'
+          : `Some tests failed ${link}`
+    }
   })
 }

@@ -29313,7 +29313,7 @@ async function run() {
         const octokit = github.getOctokit(githubToken, {}, plugin_rest_endpoint_methods_1.restEndpointMethods);
         await (0, notify_1.notifyAboutStart)(octokit, context.owner, context.repo, context.sha);
         const results = await (0, poolResults_1.poolResults)(url, token, runId);
-        await (0, notify_1.notifyAboutEnd)(octokit, context.owner, context.repo, context.sha, results.failed === 0 ? 'success' : 'failure');
+        await (0, notify_1.notifyAboutEnd)(octokit, context.owner, context.repo, context.sha, results.failed === 0 ? 'success' : 'failure', results.link);
         if (issueNumber > 0) {
             await (0, makeComment_1.makeComment)(octokit, {
                 prId: issueNumber,
@@ -29444,14 +29444,20 @@ const notifyAboutStart = async (octokit, owner, repo, commitSha) => {
     });
 };
 exports.notifyAboutStart = notifyAboutStart;
-const notifyAboutEnd = async (octokit, owner, repo, commitSha, conclusion) => {
+const notifyAboutEnd = async (octokit, owner, repo, commitSha, conclusion, link) => {
     await octokit.rest.checks.create({
         owner: owner,
         repo: repo,
         name: 'E2E tests',
         head_sha: commitSha,
         status: 'completed',
-        conclusion: conclusion
+        conclusion: conclusion,
+        output: {
+            title: 'E2E tests',
+            summary: conclusion === 'success'
+                ? 'All tests passed successfully'
+                : `Some tests failed ${link}`
+        }
     });
 };
 exports.notifyAboutEnd = notifyAboutEnd;
