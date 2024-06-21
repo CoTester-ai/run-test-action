@@ -22,6 +22,11 @@ export async function run(): Promise<void> {
       core.setFailed('project is set to an empty string')
     }
 
+    const group = core.getInput('group')
+    if (group.length === 0) {
+      core.warning('group is set to an empty string')
+    }
+
     let includeString = core.getInput('include')
     if (includeString.length === 0) {
       includeString = 'all'
@@ -70,6 +75,7 @@ export async function run(): Promise<void> {
           projectSlug: project,
           include,
           exclude,
+          group,
           triggerSource: 'CICD',
           context: {
             ...context

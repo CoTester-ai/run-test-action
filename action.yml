@@ -14,6 +14,9 @@ inputs:
   project:
     description: 'Project name in cotester.ai'
     required: true
+  group:
+    description: 'Group name in cotester.ai. Default all'
+    required: false
   include:
     description:
       'Set of include tags separated by comma to trigger tests. Default all'
