@@ -61,5 +61,5 @@ jobs:
         uses: ./
         with:
           token: 'test'
-          project: 'cotester-ai'
+          project: 'cotesterai'
           github-token: ${{ secrets.GITHUB_TOKEN }}
