@@ -39,7 +39,7 @@ jobs:
 
     steps:
       - name: coTester.ai - trigger tests in github
-        uses: CoTester-ai/run-test-action@v0.0.2
+        uses: CoTester-ai/run-test-action@v0.1.0
         with:
           token: ${{ secrets.COTESTER_TOKEN }} # required
           project: 'cotesterai' # required
