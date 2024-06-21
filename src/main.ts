@@ -22,8 +22,8 @@ export async function run(): Promise<void> {
       core.setFailed('project is set to an empty string')
     }
 
-    const group = core.getInput('group')
-    if (group.length === 0) {
+    const groupStringId = core.getInput('group')
+    if (groupStringId.length === 0) {
       core.warning('group is set to an empty string')
     }
 
@@ -75,7 +75,7 @@ export async function run(): Promise<void> {
           projectSlug: project,
           include,
           exclude,
-          group,
+          groupStringId,
           triggerSource: 'CICD',
           context: {
             ...context
