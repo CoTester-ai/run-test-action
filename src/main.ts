@@ -14,12 +14,12 @@ export async function run(): Promise<void> {
   try {
     const token = core.getInput('token')
     if (token.length === 0) {
-      core.setFailed('token is set to an empty string')
+      core.warning('token is set to an empty string')
     }
 
     const project = core.getInput('project')
     if (project.length === 0) {
-      core.setFailed('testTargetId is set to an empty string')
+      core.setFailed('project is set to an empty string')
     }
 
     let includeString = core.getInput('include')

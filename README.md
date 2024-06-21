@@ -16,12 +16,32 @@ First of all you should create some tests on
 [here](https://app.cotester.ai/settings/integrations).
 
 ```yaml
-- name: CoTester.ai
-  uses: CoTester-ai/run-test-action
-  with:
-    token: ${{ secrets.COTESTER_TOKEN }} # required
-    project: 'project-slug' # required
-    include: 'smoke,regression' # optional
-    exclude: 'performance' # optional
-    github-token: ${{ secrets.GITHUB_TOKEN }} # needed to comment on PR
+name: Continuous Integration
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  checks: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  test-action:
+    name: GitHub Actions Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: coTester.ai - trigger tests in github
+        uses: CoTester-ai/run-test-action@v0.0.2
+        with:
+          token: ${{ secrets.COTESTER_TOKEN }} # required
+          project: 'cotesterai' # required
+          github-token: ${{ secrets.GITHUB_TOKEN }} # needed to comment on PR
 ```
