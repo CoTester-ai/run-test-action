@@ -29242,6 +29242,10 @@ async function run() {
         if (project.length === 0) {
             core.setFailed('project is set to an empty string');
         }
+        const groupStringId = core.getInput('group');
+        if (groupStringId.length === 0) {
+            core.warning('group is set to an empty string');
+        }
         let includeString = core.getInput('include');
         if (includeString.length === 0) {
             includeString = 'all';
@@ -29282,6 +29286,7 @@ async function run() {
                     projectSlug: project,
                     include,
                     exclude,
+                    groupStringId,
                     triggerSource: 'CICD',
                     context: {
                         ...context

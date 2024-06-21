@@ -62,4 +62,5 @@ jobs:
         with:
           token: 'test'
           project: 'cotesterai'
+          group: 'smoke'
           github-token: ${{ secrets.GITHUB_TOKEN }}
