@@ -55,7 +55,7 @@ export async function run(): Promise<void> {
       repo: github.context.repo.repo,
       owner: github.context.repo.owner,
       ref: github.context.ref,
-      sha: github.context.payload.pull_request
+      commitSha: github.context.payload.pull_request
         ? github.context.payload.pull_request?.head.sha
         : github.context.sha
     }
@@ -116,7 +116,12 @@ export async function run(): Promise<void> {
     const { runId } = (await response.json()) as { runId: string }
 
     const octokit = github.getOctokit(githubToken, {}, restEndpointMethods)
-    await notifyAboutStart(octokit, context.owner, context.repo, context.sha)
+    await notifyAboutStart(
+      octokit,
+      context.owner,
+      context.repo,
+      context.commitSha
+    )
 
     const results = await poolResults(url, token, runId)
 
@@ -124,7 +129,7 @@ export async function run(): Promise<void> {
       octokit,
       context.owner,
       context.repo,
-      context.sha,
+      context.commitSha,
       results.failed === 0 ? 'success' : 'failure',
       results.link
     )

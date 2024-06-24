@@ -29269,7 +29269,7 @@ async function run() {
             repo: github.context.repo.repo,
             owner: github.context.repo.owner,
             ref: github.context.ref,
-            sha: github.context.payload.pull_request
+            commitSha: github.context.payload.pull_request
                 ? github.context.payload.pull_request?.head.sha
                 : github.context.sha
         };
@@ -29315,9 +29315,9 @@ async function run() {
         }
         const { runId } = (await response.json());
         const octokit = github.getOctokit(githubToken, {}, plugin_rest_endpoint_methods_1.restEndpointMethods);
-        await (0, notify_1.notifyAboutStart)(octokit, context.owner, context.repo, context.sha);
+        await (0, notify_1.notifyAboutStart)(octokit, context.owner, context.repo, context.commitSha);
         const results = await (0, poolResults_1.poolResults)(url, token, runId);
-        await (0, notify_1.notifyAboutEnd)(octokit, context.owner, context.repo, context.sha, results.failed === 0 ? 'success' : 'failure', results.link);
+        await (0, notify_1.notifyAboutEnd)(octokit, context.owner, context.repo, context.commitSha, results.failed === 0 ? 'success' : 'failure', results.link);
     }
     catch (error) {
         console.error(error);
