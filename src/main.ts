@@ -1,8 +1,7 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
 
-import { notifyAboutEnd, notifyAboutStart } from './notify'
-import { poolResults } from './poolResults'
+import { notifyAboutStart } from './notify'
 import { restEndpointMethods } from '@octokit/plugin-rest-endpoint-methods'
 
 /**
@@ -118,20 +117,10 @@ export async function run(): Promise<void> {
     const octokit = github.getOctokit(githubToken, {}, restEndpointMethods)
     await notifyAboutStart(
       octokit,
+      runId,
       context.owner,
       context.repo,
       context.commitSha
-    )
-
-    const results = await poolResults(url, token, runId)
-
-    await notifyAboutEnd(
-      octokit,
-      context.owner,
-      context.repo,
-      context.commitSha,
-      results.failed === 0 ? 'success' : 'failure',
-      results.link
     )
   } catch (error) {
     console.error(error)

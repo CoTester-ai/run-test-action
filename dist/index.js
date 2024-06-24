@@ -29225,7 +29225,6 @@ exports.run = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 const github = __importStar(__nccwpck_require__(5438));
 const notify_1 = __nccwpck_require__(3822);
-const poolResults_1 = __nccwpck_require__(5413);
 const plugin_rest_endpoint_methods_1 = __nccwpck_require__(3044);
 /**
  * The main function for the action.
@@ -29315,9 +29314,7 @@ async function run() {
         }
         const { runId } = (await response.json());
         const octokit = github.getOctokit(githubToken, {}, plugin_rest_endpoint_methods_1.restEndpointMethods);
-        await (0, notify_1.notifyAboutStart)(octokit, context.owner, context.repo, context.commitSha);
-        const results = await (0, poolResults_1.poolResults)(url, token, runId);
-        await (0, notify_1.notifyAboutEnd)(octokit, context.owner, context.repo, context.commitSha, results.failed === 0 ? 'success' : 'failure', results.link);
+        await (0, notify_1.notifyAboutStart)(octokit, runId, context.owner, context.repo, context.commitSha);
     }
     catch (error) {
         console.error(error);
@@ -29337,76 +29334,18 @@ exports.run = run;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.notifyAboutEnd = exports.notifyAboutStart = void 0;
-const notifyAboutStart = async (octokit, owner, repo, commitSha) => {
+exports.notifyAboutStart = void 0;
+const notifyAboutStart = async (octokit, externalId, owner, repo, commitSha) => {
     await octokit.rest.checks.create({
         owner: owner,
         repo: repo,
         name: 'E2E tests',
         head_sha: commitSha,
-        status: 'in_progress'
+        status: 'in_progress',
+        external_id: externalId
     });
 };
 exports.notifyAboutStart = notifyAboutStart;
-const notifyAboutEnd = async (octokit, owner, repo, commitSha, conclusion, link) => {
-    await octokit.rest.checks.create({
-        owner: owner,
-        repo: repo,
-        name: 'E2E tests',
-        head_sha: commitSha,
-        status: 'completed',
-        conclusion: conclusion,
-        output: {
-            title: 'E2E tests',
-            summary: conclusion === 'success'
-                ? 'All tests passed successfully'
-                : `Some tests failed ${link}`
-        }
-    });
-};
-exports.notifyAboutEnd = notifyAboutEnd;
-
-
-/***/ }),
-
-/***/ 5413:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.poolResults = void 0;
-const poll = async (func, condition, interval, timeout) => {
-    if (timeout <= 0) {
-        throw new Error('Timeout');
-    }
-    const res = await func();
-    if (condition(res)) {
-        return res;
-    }
-    await new Promise(resolve => setTimeout(resolve, interval));
-    return poll(func, condition, interval, timeout - interval);
-};
-const poolResults = async (url, token, testRunId) => {
-    const results = await poll(async () => {
-        const response = await fetch(`${url}/api/v1/runs/?runId=${testRunId}`, {
-            headers: {
-                'Content-Type': 'application/json',
-                'x-api-key': token
-            },
-            method: 'GET'
-        });
-        if (!response.ok) {
-            throw new Error(`response not ok ${response.status} ${await response.json()}`);
-        }
-        return await response.json();
-    }, res => res !== undefined && !res.processing, 30000, 10 * 60 * 1000);
-    if (!results) {
-        throw new Error('No results found');
-    }
-    return results;
-};
-exports.poolResults = poolResults;
 
 
 /***/ }),
