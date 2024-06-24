@@ -51,7 +51,7 @@ export async function run(): Promise<void> {
 
     const executeUrl = `${url}/api/v1/runs`
     const context = {
-      issueNumber,
+      prId: issueNumber,
       repo: github.context.repo.repo,
       owner: github.context.repo.owner,
       ref: github.context.ref,
