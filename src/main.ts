@@ -109,7 +109,7 @@ export async function run(): Promise<void> {
     }
 
     const { runId } = (await response.json()) as { runId: string }
-    console.debug(`runId: ${runId}`)
+    core.debug(`runId: ${runId}`)
     core.setOutput('runId', runId)
   } catch (error) {
     console.error(error)

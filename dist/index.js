@@ -29310,7 +29310,7 @@ async function run() {
             return;
         }
         const { runId } = (await response.json());
-        console.debug(`runId: ${runId}`);
+        core.debug(`runId: ${runId}`);
         core.setOutput('runId', runId);
     }
     catch (error) {
