@@ -29224,8 +29224,6 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.run = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 const github = __importStar(__nccwpck_require__(5438));
-const notify_1 = __nccwpck_require__(3822);
-const plugin_rest_endpoint_methods_1 = __nccwpck_require__(3044);
 /**
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
@@ -29252,7 +29250,6 @@ async function run() {
         const excludeString = core.getInput('exclude');
         const exclude = excludeString.split(',').map(s => s.trim());
         let url = core.getInput('url');
-        const githubToken = core.getInput('github-token');
         if (url.length === 0) {
             url = 'https://frugal-corgi-830.convex.site';
         }
@@ -29313,9 +29310,8 @@ async function run() {
             return;
         }
         const { runId } = (await response.json());
-        const link = `https://app.cotester.ai/p/${project}/runs/${runId}`;
-        const octokit = github.getOctokit(githubToken, {}, plugin_rest_endpoint_methods_1.restEndpointMethods);
-        await (0, notify_1.notifyAboutStart)(octokit, runId, link, context.owner, context.repo, context.commitSha);
+        console.debug(`runId: ${runId}`);
+        core.setOutput('runId', runId);
     }
     catch (error) {
         console.error(error);
@@ -29325,29 +29321,6 @@ async function run() {
     }
 }
 exports.run = run;
-
-
-/***/ }),
-
-/***/ 3822:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.notifyAboutStart = void 0;
-const notifyAboutStart = async (octokit, runId, link, owner, repo, commitSha) => {
-    await octokit.rest.checks.create({
-        owner: owner,
-        repo: repo,
-        name: 'CoTester.ai',
-        head_sha: commitSha,
-        status: 'in_progress',
-        details_url: link,
-        external_id: runId
-    });
-};
-exports.notifyAboutStart = notifyAboutStart;
 
 
 /***/ }),

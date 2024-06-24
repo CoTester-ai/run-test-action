@@ -1,9 +1,6 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
 
-import { notifyAboutStart } from './notify'
-import { restEndpointMethods } from '@octokit/plugin-rest-endpoint-methods'
-
 /**
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
@@ -33,7 +30,6 @@ export async function run(): Promise<void> {
     const excludeString = core.getInput('exclude')
     const exclude = excludeString.split(',').map(s => s.trim())
     let url = core.getInput('url')
-    const githubToken = core.getInput('github-token')
 
     if (url.length === 0) {
       url = 'https://frugal-corgi-830.convex.site'
@@ -113,18 +109,8 @@ export async function run(): Promise<void> {
     }
 
     const { runId } = (await response.json()) as { runId: string }
-
-    const link = `https://app.cotester.ai/p/${project}/runs/${runId}`
-
-    const octokit = github.getOctokit(githubToken, {}, restEndpointMethods)
-    await notifyAboutStart(
-      octokit,
-      runId,
-      link,
-      context.owner,
-      context.repo,
-      context.commitSha
-    )
+    console.debug(`runId: ${runId}`)
+    core.setOutput('runId', runId)
   } catch (error) {
     console.error(error)
     // Fail the workflow run if an error occurs
