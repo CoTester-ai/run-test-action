@@ -114,10 +114,13 @@ export async function run(): Promise<void> {
 
     const { runId } = (await response.json()) as { runId: string }
 
+    const link = `https://app.cotester.ai/p/${project}/runs/${runId}`
+
     const octokit = github.getOctokit(githubToken, {}, restEndpointMethods)
     await notifyAboutStart(
       octokit,
       runId,
+      link,
       context.owner,
       context.repo,
       context.commitSha

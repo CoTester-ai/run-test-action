@@ -2,7 +2,8 @@ import { GitHub } from '@actions/github/lib/utils'
 
 export const notifyAboutStart = async (
   octokit: InstanceType<typeof GitHub>,
-  externalId: string,
+  runId: string,
+  link: string,
   owner: string,
   repo: string,
   commitSha: string
@@ -13,6 +14,7 @@ export const notifyAboutStart = async (
     name: 'CoTester.ai',
     head_sha: commitSha,
     status: 'in_progress',
-    external_id: externalId
+    details_url: link,
+    external_id: runId
   })
 }

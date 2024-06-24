@@ -29313,8 +29313,9 @@ async function run() {
             return;
         }
         const { runId } = (await response.json());
+        const link = `https://app.cotester.ai/p/${project}/runs/${runId}`;
         const octokit = github.getOctokit(githubToken, {}, plugin_rest_endpoint_methods_1.restEndpointMethods);
-        await (0, notify_1.notifyAboutStart)(octokit, runId, context.owner, context.repo, context.commitSha);
+        await (0, notify_1.notifyAboutStart)(octokit, runId, link, context.owner, context.repo, context.commitSha);
     }
     catch (error) {
         console.error(error);
@@ -29335,14 +29336,15 @@ exports.run = run;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.notifyAboutStart = void 0;
-const notifyAboutStart = async (octokit, externalId, owner, repo, commitSha) => {
+const notifyAboutStart = async (octokit, runId, link, owner, repo, commitSha) => {
     await octokit.rest.checks.create({
         owner: owner,
         repo: repo,
-        name: 'E2E tests',
+        name: 'CoTester.ai',
         head_sha: commitSha,
         status: 'in_progress',
-        external_id: externalId
+        details_url: link,
+        external_id: runId
     });
 };
 exports.notifyAboutStart = notifyAboutStart;
