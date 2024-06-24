@@ -10,7 +10,7 @@ export const notifyAboutStart = async (
   await octokit.rest.checks.create({
     owner: owner,
     repo: repo,
-    name: 'E2E tests',
+    name: 'CoTester.ai',
     head_sha: commitSha,
     status: 'in_progress',
     external_id: externalId
