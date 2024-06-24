@@ -3,7 +3,6 @@ import * as github from '@actions/github'
 
 import { notifyAboutEnd, notifyAboutStart } from './notify'
 import { poolResults } from './poolResults'
-import { makeComment } from './makeComment'
 import { restEndpointMethods } from '@octokit/plugin-rest-endpoint-methods'
 
 /**
@@ -129,17 +128,6 @@ export async function run(): Promise<void> {
       results.failed === 0 ? 'success' : 'failure',
       results.link
     )
-
-    if (issueNumber > 0) {
-      await makeComment(octokit, {
-        prId: issueNumber,
-        commitSha: context.sha,
-        testRunId: runId,
-        owner: context.owner,
-        repo: context.repo,
-        results: results
-      })
-    }
   } catch (error) {
     console.error(error)
     // Fail the workflow run if an error occurs
