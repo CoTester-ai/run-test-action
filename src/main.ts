@@ -1,11 +1,6 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
 
-import { notifyAboutEnd, notifyAboutStart } from './notify'
-import { poolResults } from './poolResults'
-import { makeComment } from './makeComment'
-import { restEndpointMethods } from '@octokit/plugin-rest-endpoint-methods'
-
 /**
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
@@ -32,11 +27,11 @@ export async function run(): Promise<void> {
       includeString = 'all'
     }
     const include = includeString.split(',').map(s => s.trim())
+
     const excludeString = core.getInput('exclude')
     const exclude = excludeString.split(',').map(s => s.trim())
-    let url = core.getInput('url')
-    const githubToken = core.getInput('github-token')
 
+    let url = core.getInput('url')
     if (url.length === 0) {
       url = 'https://frugal-corgi-830.convex.site'
     }
@@ -52,11 +47,11 @@ export async function run(): Promise<void> {
 
     const executeUrl = `${url}/api/v1/runs`
     const context = {
-      issueNumber,
+      prId: issueNumber,
       repo: github.context.repo.repo,
       owner: github.context.repo.owner,
       ref: github.context.ref,
-      sha: github.context.payload.pull_request
+      commitSha: github.context.payload.pull_request
         ? github.context.payload.pull_request?.head.sha
         : github.context.sha
     }
@@ -115,31 +110,8 @@ export async function run(): Promise<void> {
     }
 
     const { runId } = (await response.json()) as { runId: string }
-
-    const octokit = github.getOctokit(githubToken, {}, restEndpointMethods)
-    await notifyAboutStart(octokit, context.owner, context.repo, context.sha)
-
-    const results = await poolResults(url, token, runId)
-
-    await notifyAboutEnd(
-      octokit,
-      context.owner,
-      context.repo,
-      context.sha,
-      results.failed === 0 ? 'success' : 'failure',
-      results.link
-    )
-
-    if (issueNumber > 0) {
-      await makeComment(octokit, {
-        prId: issueNumber,
-        commitSha: context.sha,
-        testRunId: runId,
-        owner: context.owner,
-        repo: context.repo,
-        results: results
-      })
-    }
+    core.debug(`runId: ${runId}`)
+    core.setOutput('runId', runId)
   } catch (error) {
     console.error(error)
     // Fail the workflow run if an error occurs

@@ -29224,10 +29224,6 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.run = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 const github = __importStar(__nccwpck_require__(5438));
-const notify_1 = __nccwpck_require__(3822);
-const poolResults_1 = __nccwpck_require__(5413);
-const makeComment_1 = __nccwpck_require__(142);
-const plugin_rest_endpoint_methods_1 = __nccwpck_require__(3044);
 /**
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
@@ -29254,7 +29250,6 @@ async function run() {
         const excludeString = core.getInput('exclude');
         const exclude = excludeString.split(',').map(s => s.trim());
         let url = core.getInput('url');
-        const githubToken = core.getInput('github-token');
         if (url.length === 0) {
             url = 'https://frugal-corgi-830.convex.site';
         }
@@ -29266,11 +29261,11 @@ async function run() {
         }
         const executeUrl = `${url}/api/v1/runs`;
         const context = {
-            issueNumber,
+            prId: issueNumber,
             repo: github.context.repo.repo,
             owner: github.context.repo.owner,
             ref: github.context.ref,
-            sha: github.context.payload.pull_request
+            commitSha: github.context.payload.pull_request
                 ? github.context.payload.pull_request?.head.sha
                 : github.context.sha
         };
@@ -29315,20 +29310,8 @@ async function run() {
             return;
         }
         const { runId } = (await response.json());
-        const octokit = github.getOctokit(githubToken, {}, plugin_rest_endpoint_methods_1.restEndpointMethods);
-        await (0, notify_1.notifyAboutStart)(octokit, context.owner, context.repo, context.sha);
-        const results = await (0, poolResults_1.poolResults)(url, token, runId);
-        await (0, notify_1.notifyAboutEnd)(octokit, context.owner, context.repo, context.sha, results.failed === 0 ? 'success' : 'failure', results.link);
-        if (issueNumber > 0) {
-            await (0, makeComment_1.makeComment)(octokit, {
-                prId: issueNumber,
-                commitSha: context.sha,
-                testRunId: runId,
-                owner: context.owner,
-                repo: context.repo,
-                results: results
-            });
-        }
+        core.debug(`runId: ${runId}`);
+        core.setOutput('runId', runId);
     }
     catch (error) {
         console.error(error);
@@ -29338,176 +29321,6 @@ async function run() {
     }
 }
 exports.run = run;
-
-
-/***/ }),
-
-/***/ 142:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.minimizePreviousComments = exports.makeComment = void 0;
-// @ts-ignore
-const makeComment = async (octokit, args) => {
-    const { results } = args;
-    const approve = results.failed === 0;
-    let message;
-    if (approve) {
-        message = 'All tests passed successfully :white_check_mark:';
-    }
-    else {
-        message = await createMessage(args);
-    }
-    await sendMessage(octokit, message, args);
-};
-exports.makeComment = makeComment;
-const createMessage = async (args) => {
-    const reportUrl = args.results.link;
-    const tableContent = args.results.tests
-        .map(test => `| ${test.name} | ${test.message} | ${test.traceUrl ? `[click](${test.traceUrl})` : '-'} |`)
-        .join('\n');
-    const message = `[Test report](${reportUrl}): ${args.results.failed}/${args.results.total} failed :rotating_light:
-
-| Test  | Message | Trace |
-| ------------- | ------------- | ------------- |
-${tableContent}
-`;
-    return message;
-};
-const sendMessage = async (octokit, message, args) => {
-    const { prId, owner, repo } = args;
-    await (0, exports.minimizePreviousComments)(octokit, args);
-    await octokit.rest.issues.createComment({
-        issue_number: prId,
-        owner: owner,
-        repo: repo,
-        body: message
-    });
-};
-const minimizePreviousComments = async (octokit, { owner, repo, prId }) => {
-    const queryComments = `
-    query comments($owner: String!, $repo: String!, $pull_number: Int!) {
-      repository(owner: $owner, name: $repo) {
-        pullRequest(number: $pull_number) {
-          comments(last: 100, orderBy: { field: UPDATED_AT, direction: DESC }) {
-            nodes {
-              id
-              url
-              author {
-                login
-              }
-              body
-              isMinimized
-            }
-          }
-        }
-      }
-    }
-  `;
-    const commentsResponse = await octokit.graphql(queryComments, {
-        owner: owner,
-        repo: repo,
-        pull_number: Number(prId)
-    });
-    const comments = 
-    // @ts-ignore
-    commentsResponse.repository.pullRequest.comments.nodes.filter(
-    // @ts-ignore
-    comment => comment.author.login === 'github-actions' && !comment.isMinimized);
-    for (const comment of comments) {
-        const query = `
-            mutation minimizeComment($id: ID!) {
-            minimizeComment(input: { classifier: OUTDATED, subjectId: $id }) {
-                clientMutationId
-            }
-            }
-        `;
-        await octokit.graphql(query, { id: comment.id });
-    }
-};
-exports.minimizePreviousComments = minimizePreviousComments;
-
-
-/***/ }),
-
-/***/ 3822:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.notifyAboutEnd = exports.notifyAboutStart = void 0;
-const notifyAboutStart = async (octokit, owner, repo, commitSha) => {
-    await octokit.rest.checks.create({
-        owner: owner,
-        repo: repo,
-        name: 'E2E tests',
-        head_sha: commitSha,
-        status: 'in_progress'
-    });
-};
-exports.notifyAboutStart = notifyAboutStart;
-const notifyAboutEnd = async (octokit, owner, repo, commitSha, conclusion, link) => {
-    await octokit.rest.checks.create({
-        owner: owner,
-        repo: repo,
-        name: 'E2E tests',
-        head_sha: commitSha,
-        status: 'completed',
-        conclusion: conclusion,
-        output: {
-            title: 'E2E tests',
-            summary: conclusion === 'success'
-                ? 'All tests passed successfully'
-                : `Some tests failed ${link}`
-        }
-    });
-};
-exports.notifyAboutEnd = notifyAboutEnd;
-
-
-/***/ }),
-
-/***/ 5413:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.poolResults = void 0;
-const poll = async (func, condition, interval, timeout) => {
-    if (timeout <= 0) {
-        throw new Error('Timeout');
-    }
-    const res = await func();
-    if (condition(res)) {
-        return res;
-    }
-    await new Promise(resolve => setTimeout(resolve, interval));
-    return poll(func, condition, interval, timeout - interval);
-};
-const poolResults = async (url, token, testRunId) => {
-    const results = await poll(async () => {
-        const response = await fetch(`${url}/api/v1/runs/?runId=${testRunId}`, {
-            headers: {
-                'Content-Type': 'application/json',
-                'x-api-key': token
-            },
-            method: 'GET'
-        });
-        if (!response.ok) {
-            throw new Error(`response not ok ${response.status} ${await response.json()}`);
-        }
-        return await response.json();
-    }, res => res !== undefined && !res.processing, 30000, 10 * 60 * 1000);
-    if (!results) {
-        throw new Error('No results found');
-    }
-    return results;
-};
-exports.poolResults = poolResults;
 
 
 /***/ }),
