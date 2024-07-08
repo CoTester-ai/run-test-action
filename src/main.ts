@@ -66,7 +66,7 @@ export async function run(): Promise<void> {
       group,
       include,
       exclude,
-      triggerSource: 'cicd',
+      triggerSource: 'CICD',
       context
     })
     console.log('done:', result)
