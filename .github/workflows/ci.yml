@@ -62,6 +62,8 @@ jobs:
       - name: Test Local Action
         id: test-action
         uses: ./
+        env:
+          PWDEBUG: console
         with:
           apiKey: ${{ secrets.API_KEY }}
           url: 'https://exciting-wombat-158.convex.site'
