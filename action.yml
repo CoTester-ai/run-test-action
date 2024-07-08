@@ -8,8 +8,8 @@ inputs:
   url:
     description: 'Url of the cotester.ai instance. Needs for debug'
     required: false
-  token:
-    description: 'Token to authenticate with coTester.ai'
+  apiKey:
+    description: 'API Key to authenticate with coTester.ai'
     required: true
   project:
     description: 'Project name in cotester.ai'

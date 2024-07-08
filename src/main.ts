@@ -1,15 +1,18 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
 
+
+import { execute } from '@cotesterai/self-hosted-executor/executor'
+
 /**
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
  */
 export async function run(): Promise<void> {
   try {
-    const token = core.getInput('token')
-    if (token.length === 0) {
-      core.warning('token is set to an empty string')
+    const apiKey = core.getInput('apiKey')
+    if (apiKey.length === 0) {
+      core.warning('apiKey is set to an empty string')
     }
 
     const project = core.getInput('project')
@@ -17,8 +20,8 @@ export async function run(): Promise<void> {
       core.setFailed('project is set to an empty string')
     }
 
-    const groupStringId = core.getInput('group')
-    if (groupStringId.length === 0) {
+    const group = core.getInput('group')
+    if (group.length === 0) {
       core.warning('group is set to an empty string')
     }
 
@@ -40,12 +43,11 @@ export async function run(): Promise<void> {
     if (!issueNumber || issueNumber < 1) {
       core.warning(
         'issue.number variable (Pull Request ID) not available. ' +
-          'Make sure you run this action in a workflow triggered by pull request ' +
-          'if you expect a comment with the test results on your PR'
+        'Make sure you run this action in a workflow triggered by pull request ' +
+        'if you expect a comment with the test results on your PR'
       )
     }
 
-    const executeUrl = `${url}/api/v1/runs`
     const context = {
       prId: issueNumber,
       repo: github.context.repo.repo,
@@ -56,62 +58,22 @@ export async function run(): Promise<void> {
         : github.context.sha
     }
 
-    core.debug(JSON.stringify({ executeUrl, context }, null, 2))
+    core.info(`Running with context: ${JSON.stringify(context)}`)
 
-    let response: Response
-
-    try {
-      response = await fetch(executeUrl, {
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': token
-        },
-        body: JSON.stringify({
-          projectSlug: project,
-          include,
-          exclude,
-          groupStringId,
-          triggerSource: 'CICD',
-          context: {
-            ...context
-          }
-        }),
-        method: 'POST'
-      })
-
-      if (!response.ok) {
-        const contentType = response.headers.get('Content-Type')
-        throw new Error(
-          `response not ok ${response.status}, ${JSON.stringify(
-            {
-              body:
-                contentType === 'application/json' ? await response.json() : {}
-            },
-            null,
-            2
-          )}`
-        )
+    const result = await execute(
+      {
+        url,
+        apiKey,
+        project,
+        group,
+        include,
+        exclude,
+        triggerSource: "cicd",
+        context,
       }
-    } catch (error) {
-      if (error instanceof Error) {
-        core.setFailed(
-          `unable to execute:  ${
-            typeof error.message === 'object'
-              ? JSON.stringify({
-                  error: error.message
-                })
-              : error.message
-          }`
-        )
-      } else {
-        core.setFailed('unknown Error')
-      }
-      return
-    }
+    )
+    console.log("done:", result)
 
-    const { runId } = (await response.json()) as { runId: string }
-    core.debug(`runId: ${runId}`)
-    core.setOutput('runId', runId)
   } catch (error) {
     console.error(error)
     // Fail the workflow run if an error occurs
