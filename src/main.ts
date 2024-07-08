@@ -1,7 +1,7 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
 
-import { execute } from '@cotesterai/self-hosted-executor/dist/executor'
+import { execute } from '@cotesterai/self-hosted-executor'
 
 /**
  * The main function for the action.
