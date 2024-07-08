@@ -1,8 +1,7 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
 
-
-import { execute } from '@cotesterai/self-hosted-executor/executor'
+import { execute } from '@cotesterai/self-hosted-executor/dist/executor'
 
 /**
  * The main function for the action.
@@ -43,8 +42,8 @@ export async function run(): Promise<void> {
     if (!issueNumber || issueNumber < 1) {
       core.warning(
         'issue.number variable (Pull Request ID) not available. ' +
-        'Make sure you run this action in a workflow triggered by pull request ' +
-        'if you expect a comment with the test results on your PR'
+          'Make sure you run this action in a workflow triggered by pull request ' +
+          'if you expect a comment with the test results on your PR'
       )
     }
 
@@ -60,20 +59,17 @@ export async function run(): Promise<void> {
 
     core.info(`Running with context: ${JSON.stringify(context)}`)
 
-    const result = await execute(
-      {
-        url,
-        apiKey,
-        project,
-        group,
-        include,
-        exclude,
-        triggerSource: "cicd",
-        context,
-      }
-    )
-    console.log("done:", result)
-
+    const result = await execute({
+      url,
+      apiKey,
+      project,
+      group,
+      include,
+      exclude,
+      triggerSource: 'cicd',
+      context
+    })
+    console.log('done:', result)
   } catch (error) {
     console.error(error)
     // Fail the workflow run if an error occurs
