@@ -60,6 +60,7 @@ jobs:
         id: test-action
         uses: ./
         with:
-          token: 'test'
-          project: 'cotesterai'
+          apiKey: ${{ secrets.API_KEY }}
+          url: 'https://exciting-wombat-158.convex.site'
+          project: 'cotester-ai'
           group: 'smoke'
