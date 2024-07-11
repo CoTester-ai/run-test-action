@@ -59,7 +59,7 @@ export async function run(): Promise<void> {
 
     core.info(`Running with context: ${JSON.stringify(context)}`)
 
-    const result = await execute({
+    const testExecutionResult = await execute({
       url,
       apiKey,
       project,
@@ -69,7 +69,11 @@ export async function run(): Promise<void> {
       triggerSource: 'CICD',
       context
     })
-    console.log('done:', result)
+    core.info(`Test execution result: ${JSON.stringify(testExecutionResult)}`)
+    if (testExecutionResult.result === 'failed') {
+      core.setOutput('result', JSON.stringify(testExecutionResult))
+      core.setFailed('Test execution failed')
+    }
   } catch (error) {
     console.error(error)
     // Fail the workflow run if an error occurs
