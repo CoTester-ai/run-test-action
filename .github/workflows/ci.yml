@@ -56,10 +56,15 @@ jobs:
         id: checkout
         uses: actions/checkout@v4
 
+      - name: Install playwright browsers
+        run: npm ci && npx playwright install --with-deps
+
       - name: Test Local Action
         id: test-action
         uses: ./
+        env:
+          PWDEBUG: console
         with:
-          token: 'test'
-          project: 'cotesterai'
+          apiKey: ${{ secrets.API_KEY }}
+          project: 'cotester-ai'
           group: 'smoke'

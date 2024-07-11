@@ -30,7 +30,7 @@
     "format:write": "npx prettier --write .",
     "format:check": "npx prettier --check .",
     "lint": "npx eslint . -c ./.github/linters/.eslintrc.yml",
-    "package": "npx ncc build src/index.ts -o dist --source-map --license licenses.txt",
+    "package": "npx tsc",
     "package:watch": "npm run package -- --watch",
     "test": "npx jest --passWithNoTests",
     "all": "npm run format:write && npm run lint && npm run test && npm run coverage && npm run package"
@@ -67,7 +67,8 @@
   },
   "dependencies": {
     "@actions/core": "^1.10.1",
-    "@actions/github": "^6.0.0"
+    "@actions/github": "^6.0.0",
+    "@cotesterai/self-hosted-executor": "1.1.0"
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
