@@ -69,6 +69,7 @@ export async function run(): Promise<void> {
       triggerSource: 'CICD',
       context
     })
+    
     core.info(`Test execution result: ${JSON.stringify(testExecutionResult)}`)
     if (testExecutionResult.result === 'failed') {
       core.setOutput('result', JSON.stringify(testExecutionResult))
