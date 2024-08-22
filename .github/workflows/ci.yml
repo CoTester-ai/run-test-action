@@ -65,6 +65,7 @@ jobs:
         env:
           PWDEBUG: console
         with:
-          apiKey: ${{ secrets.API_KEY }}
+          url: https://exciting-wombat-158.convex.cloud
+          secretKey: ${{ secrets.SECRET_KEY }}
           project: 'cotester-ai'
           group: 'smoke'

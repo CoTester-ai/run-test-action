@@ -9,13 +9,13 @@ import { execute } from '@cotesterai/self-hosted-executor'
  */
 export async function run(): Promise<void> {
   try {
-    const apiKey = core.getInput('apiKey')
-    if (apiKey.length === 0) {
+    const secretKey = core.getInput('secretKey')
+    if (secretKey.length === 0) {
       core.warning('apiKey is set to an empty string')
     }
 
-    const project = core.getInput('project')
-    if (project.length === 0) {
+    const projectSlug = core.getInput('project')
+    if (projectSlug.length === 0) {
       core.setFailed('project is set to an empty string')
     }
 
@@ -24,18 +24,9 @@ export async function run(): Promise<void> {
       core.warning('group is set to an empty string')
     }
 
-    let includeString = core.getInput('include')
-    if (includeString.length === 0) {
-      includeString = 'all'
-    }
-    const include = includeString.split(',').map(s => s.trim())
-
-    const excludeString = core.getInput('exclude')
-    const exclude = excludeString.split(',').map(s => s.trim())
-
     let url = core.getInput('url')
     if (url.length === 0) {
-      url = 'https://frugal-corgi-830.convex.site'
+      url = 'https://frugal-corgi-830.convex.cloud'
     }
 
     const issueNumber = github.context.issue.number
@@ -47,27 +38,58 @@ export async function run(): Promise<void> {
       )
     }
 
-    const context = {
-      prId: issueNumber,
-      repo: github.context.repo.repo,
-      owner: github.context.repo.owner,
-      ref: github.context.ref,
-      commitSha: github.context.payload.pull_request
-        ? github.context.payload.pull_request?.head.sha
-        : github.context.sha
+    const triggerContext = {
+      source: 'CICD',
+      author: 'ANON', // TODO:
+      github: {
+        prId: issueNumber,
+        commitSha: github.context.payload.pull_request
+          ? github.context.payload.pull_request?.head.sha
+          : github.context.sha,
+        ref: github.context.ref,
+        repo: github.context.repo.repo,
+        owner: github.context.repo.owner
+      }
     }
 
-    core.info(`Running with context: ${JSON.stringify(context)}`)
+    core.info(`Running with context: ${JSON.stringify(triggerContext)}`)
+
+    /*
+  baseUrl?: string
+  projectSlug: string
+  group?: string
+  variables: { key: string; value: string }[]
+  triggerContext: {
+    source: 'MANUALLY' | 'SCHEDULED' | 'CICD'
+    author: string
+    github: {
+      prId?: number
+      commitSha: string
+      ref?: string
+      owner: string
+      repo: string
+    }
+    slack?: {
+      reportToChannel: string
+    }
+  },
+  secretKey: string
+  settings?: {
+    cotesterConvexUrl?: string
+  }
+    */
+
+    const variables = []
 
     const testExecutionResult = await execute({
-      url,
-      apiKey,
-      project,
+      projectSlug,
       group,
-      include,
-      exclude,
-      triggerSource: 'CICD',
-      context
+      variables,
+      triggerContext,
+      secretKey,
+      settings: {
+        cotesterConvexUrl: url
+      }
     })
     core.info(`Test execution result: ${JSON.stringify(testExecutionResult)}`)
     if (testExecutionResult.result === 'failed') {
