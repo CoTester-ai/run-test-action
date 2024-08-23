@@ -27,34 +27,28 @@ exports.run = run;
 const core = __importStar(require("@actions/core"));
 const github = __importStar(require("@actions/github"));
 const self_hosted_executor_1 = require("@cotesterai/self-hosted-executor");
+const process_1 = require("process");
 /**
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
  */
 async function run() {
     try {
-        const apiKey = core.getInput('apiKey');
-        if (apiKey.length === 0) {
+        const secretKey = core.getInput('secretKey');
+        if (secretKey.length === 0) {
             core.warning('apiKey is set to an empty string');
         }
-        const project = core.getInput('project');
-        if (project.length === 0) {
+        const projectSlug = core.getInput('project');
+        if (projectSlug.length === 0) {
             core.setFailed('project is set to an empty string');
         }
         const group = core.getInput('group');
         if (group.length === 0) {
             core.warning('group is set to an empty string');
         }
-        let includeString = core.getInput('include');
-        if (includeString.length === 0) {
-            includeString = 'all';
-        }
-        const include = includeString.split(',').map(s => s.trim());
-        const excludeString = core.getInput('exclude');
-        const exclude = excludeString.split(',').map(s => s.trim());
         let url = core.getInput('url');
         if (url.length === 0) {
-            url = 'https://frugal-corgi-830.convex.site';
+            url = 'https://frugal-corgi-830.convex.cloud';
         }
         const issueNumber = github.context.issue.number;
         if (!issueNumber || issueNumber < 1) {
@@ -62,25 +56,30 @@ async function run() {
                 'Make sure you run this action in a workflow triggered by pull request ' +
                 'if you expect a comment with the test results on your PR');
         }
-        const context = {
-            prId: issueNumber,
-            repo: github.context.repo.repo,
-            owner: github.context.repo.owner,
-            ref: github.context.ref,
-            commitSha: github.context.payload.pull_request
-                ? github.context.payload.pull_request?.head.sha
-                : github.context.sha
+        const triggerContext = {
+            source: 'CICD',
+            author: 'ANON', // TODO:
+            github: {
+                prId: issueNumber,
+                commitSha: github.context.payload.pull_request !== undefined
+                    ? github.context.payload.pull_request.head.sha
+                    : github.context.sha,
+                ref: github.context.ref,
+                repo: github.context.repo.repo,
+                owner: github.context.repo.owner
+            }
         };
-        core.info(`Running with context: ${JSON.stringify(context)}`);
+        core.info(`Running with context: ${JSON.stringify(triggerContext)}`);
+        const variables = [];
         const testExecutionResult = await (0, self_hosted_executor_1.execute)({
-            url,
-            apiKey,
-            project,
+            projectSlug,
             group,
-            include,
-            exclude,
-            triggerSource: 'CICD',
-            context
+            variables,
+            triggerContext,
+            secretKey,
+            settings: {
+                cotesterConvexUrl: url
+            }
         });
         core.info(`Test execution result: ${JSON.stringify(testExecutionResult)}`);
         if (testExecutionResult.result === 'failed') {
@@ -94,5 +93,6 @@ async function run() {
         if (error instanceof Error)
             core.setFailed(error.message);
     }
+    (0, process_1.exit)();
 }
 //# sourceMappingURL=main.js.map
