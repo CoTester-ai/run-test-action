@@ -2,6 +2,7 @@ import * as core from '@actions/core'
 import * as github from '@actions/github'
 
 import { execute } from '@cotesterai/self-hosted-executor'
+import { exit } from 'process'
 
 /**
  * The main function for the action.
@@ -54,31 +55,6 @@ export async function run(): Promise<void> {
 
     core.info(`Running with context: ${JSON.stringify(triggerContext)}`)
 
-    /*
-  baseUrl?: string
-  projectSlug: string
-  group?: string
-  variables: { key: string; value: string }[]
-  triggerContext: {
-    source: 'MANUALLY' | 'SCHEDULED' | 'CICD'
-    author: string
-    github: {
-      prId?: number
-      commitSha: string
-      ref?: string
-      owner: string
-      repo: string
-    }
-    slack?: {
-      reportToChannel: string
-    }
-  },
-  secretKey: string
-  settings?: {
-    cotesterConvexUrl?: string
-  }
-    */
-
     const variables = []
 
     const testExecutionResult = await execute({
@@ -101,4 +77,5 @@ export async function run(): Promise<void> {
     // Fail the workflow run if an error occurs
     if (error instanceof Error) core.setFailed(error.message)
   }
+  exit()
 }

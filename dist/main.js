@@ -27,6 +27,7 @@ exports.run = run;
 const core = __importStar(require("@actions/core"));
 const github = __importStar(require("@actions/github"));
 const self_hosted_executor_1 = require("@cotesterai/self-hosted-executor");
+const process_1 = require("process");
 /**
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
@@ -69,30 +70,6 @@ async function run() {
             }
         };
         core.info(`Running with context: ${JSON.stringify(triggerContext)}`);
-        /*
-      baseUrl?: string
-      projectSlug: string
-      group?: string
-      variables: { key: string; value: string }[]
-      triggerContext: {
-        source: 'MANUALLY' | 'SCHEDULED' | 'CICD'
-        author: string
-        github: {
-          prId?: number
-          commitSha: string
-          ref?: string
-          owner: string
-          repo: string
-        }
-        slack?: {
-          reportToChannel: string
-        }
-      },
-      secretKey: string
-      settings?: {
-        cotesterConvexUrl?: string
-      }
-        */
         const variables = [];
         const testExecutionResult = await (0, self_hosted_executor_1.execute)({
             projectSlug,
@@ -116,5 +93,6 @@ async function run() {
         if (error instanceof Error)
             core.setFailed(error.message);
     }
+    (0, process_1.exit)();
 }
 //# sourceMappingURL=main.js.map
