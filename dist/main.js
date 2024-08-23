@@ -61,8 +61,8 @@ async function run() {
             author: 'ANON', // TODO:
             github: {
                 prId: issueNumber,
-                commitSha: github.context.payload.pull_request
-                    ? github.context.payload.pull_request?.head.sha
+                commitSha: github.context.payload.pull_request !== undefined
+                    ? github.context.payload.pull_request.head.sha
                     : github.context.sha,
                 ref: github.context.ref,
                 repo: github.context.repo.repo,

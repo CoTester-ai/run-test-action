@@ -44,9 +44,10 @@ export async function run(): Promise<void> {
       author: 'ANON', // TODO:
       github: {
         prId: issueNumber,
-        commitSha: github.context.payload.pull_request
-          ? github.context.payload.pull_request?.head.sha
-          : github.context.sha,
+        commitSha:
+          github.context.payload.pull_request !== undefined
+            ? github.context.payload.pull_request.head.sha
+            : github.context.sha,
         ref: github.context.ref,
         repo: github.context.repo.repo,
         owner: github.context.repo.owner
