@@ -31,8 +31,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Install playwright browsers
+        run: npm ci playwright && npx playwright install --with-deps
+
       - name: coTester.ai - trigger tests in github
-        uses: CoTester-ai/run-test-action@latest
+        uses: CoTester-ai/run-test-action@v0.3.1
         env:
           PWDEBUG: console
         with:
