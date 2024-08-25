@@ -6,14 +6,12 @@
 [![CodeQL](https://github.com/actions/typescript-action/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/actions/typescript-action/actions/workflows/codeql-analysis.yml)
 [![Coverage](./badges/coverage.svg)](./badges/coverage.svg)
 
-This action triggers [CoTester.ai](https://app.cotester.ai) on pull request and
-merges.
+This action triggers [CoTester.ai](https://app.cotester.ai) in pipelines.
 
 ## Getting Started
 
 First of all you should create some tests on
-[cotester.ai](https://app.cotester.ai) and get your API token
-[here](https://app.cotester.ai/settings/integrations).
+[cotester.ai](https://app.cotester.ai) and get your API token [here](https://app.cotester.ai/settings/integrations).
 
 ```yaml
 name: Continuous Integration
@@ -26,22 +24,16 @@ on:
     branches:
       - main
 
-permissions:
-  contents: read
-  checks: write
-  issues: write
-  pull-requests: write
-
 jobs:
-  test-action:
-    name: GitHub Actions Test
+  cotester-action:
+    name: Cotester Test
     runs-on: ubuntu-latest
 
     steps:
       - name: coTester.ai - trigger tests in github
-        uses: CoTester-ai/run-test-action@v0.1.0
+        uses: CoTester-ai/run-test-action@latest
         with:
-          token: ${{ secrets.COTESTER_TOKEN }} # required
+          secretKey: ${{ secrets.COTESTER_TOKEN }} # required
           project: 'cotesterai' # required
-          github-token: ${{ secrets.GITHUB_TOKEN }} # needed to comment on PR
+          group: 'smoke'
 ```

@@ -17,14 +17,6 @@ inputs:
   group:
     description: 'Group name in cotester.ai. Default all'
     required: false
-  include:
-    description:
-      'Set of include tags separated by comma to trigger tests. Default all'
-    required: false
-  exclude:
-    description:
-      'Set of exclude tags separated by comma to trigger tests. Default none'
-    required: false
 runs:
   using: 'node20'
   main: 'dist/index.js'
