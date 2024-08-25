@@ -33,6 +33,8 @@ jobs:
     steps:
       - name: coTester.ai - trigger tests in github
         uses: CoTester-ai/run-test-action@latest
+        env:
+          PWDEBUG: console
         with:
           secretKey: ${{ secrets.COTESTER_SECRET_KEY }} # required
           project: 'cotesterai' # required
