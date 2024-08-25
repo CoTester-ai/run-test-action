@@ -11,7 +11,8 @@ This action triggers [CoTester.ai](https://app.cotester.ai) in pipelines.
 ## Getting Started
 
 First of all you should create some tests on
-[cotester.ai](https://app.cotester.ai) and get your API token [here](https://app.cotester.ai/settings/integrations).
+[cotester.ai](https://app.cotester.ai) and get your API token
+[here](https://app.cotester.ai/settings/integrations).
 
 ```yaml
 name: Continuous Integration
@@ -33,7 +34,7 @@ jobs:
       - name: coTester.ai - trigger tests in github
         uses: CoTester-ai/run-test-action@latest
         with:
-          secretKey: ${{ secrets.COTESTER_TOKEN }} # required
+          secretKey: ${{ secrets.COTESTER_SECRET_KEY }} # required
           project: 'cotesterai' # required
           group: 'smoke'
 ```
