@@ -6,8 +6,7 @@
 [![CodeQL](https://github.com/actions/typescript-action/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/actions/typescript-action/actions/workflows/codeql-analysis.yml)
 [![Coverage](./badges/coverage.svg)](./badges/coverage.svg)
 
-This action triggers [CoTester.ai](https://app.cotester.ai) on pull request and
-merges.
+This action triggers [CoTester.ai](https://app.cotester.ai) in pipelines.
 
 ## Getting Started
 
@@ -26,22 +25,21 @@ on:
     branches:
       - main
 
-permissions:
-  contents: read
-  checks: write
-  issues: write
-  pull-requests: write
-
 jobs:
-  test-action:
-    name: GitHub Actions Test
+  cotester-action:
+    name: Cotester Test
     runs-on: ubuntu-latest
 
     steps:
+      - name: Install playwright browsers
+        run: npm ci playwright && npx playwright install --with-deps
+
       - name: coTester.ai - trigger tests in github
-        uses: CoTester-ai/run-test-action@v0.1.0
+        uses: CoTester-ai/run-test-action@v0.3.1
+        env:
+          PWDEBUG: console
         with:
-          token: ${{ secrets.COTESTER_TOKEN }} # required
+          secretKey: ${{ secrets.COTESTER_SECRET_KEY }} # required
           project: 'cotesterai' # required
-          github-token: ${{ secrets.GITHUB_TOKEN }} # needed to comment on PR
+          group: 'smoke'
 ```
