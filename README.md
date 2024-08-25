@@ -32,7 +32,7 @@ jobs:
 
     steps:
       - name: Install playwright browsers
-        run: npm ci playwright && npx playwright install --with-deps
+        run: npm i playwright && npx playwright install --with-deps
 
       - name: coTester.ai - trigger tests in github
         uses: CoTester-ai/run-test-action@v0.3.1
