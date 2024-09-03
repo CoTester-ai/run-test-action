@@ -29,6 +29,11 @@ export async function run(): Promise<void> {
     if (url.length === 0) {
       url = 'https://frugal-corgi-830.convex.cloud'
     }
+    let maxParallelRunsStr = core.getInput('max_parallel_runs')
+    if (maxParallelRunsStr.length === 0) {
+      maxParallelRunsStr = '5'
+    }
+    const maxParallelRuns = Number(maxParallelRunsStr)
 
     const issueNumber = github.context.issue.number
     if (!issueNumber || issueNumber < 1) {
@@ -65,7 +70,8 @@ export async function run(): Promise<void> {
       triggerContext,
       secretKey,
       settings: {
-        cotesterConvexUrl: url
+        cotesterConvexUrl: url,
+        maxParallelRuns
       }
     })
     core.info(`Test execution result: ${JSON.stringify(testExecutionResult)}`)

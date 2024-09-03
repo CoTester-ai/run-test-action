@@ -17,6 +17,9 @@ inputs:
   group:
     description: 'Group name in cotester.ai. Default all'
     required: false
+  max_parallel_runs:
+    description: 'Maximum amount of parallel tests runs'
+    required: false
 runs:
   using: 'node20'
   main: 'dist/index.js'
