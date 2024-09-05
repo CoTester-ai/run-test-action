@@ -33,6 +33,22 @@ export async function run(): Promise<void> {
     if (maxParallelRunsStr.length === 0) {
       maxParallelRunsStr = '5'
     }
+
+    let proxyUrl = core.getInput('proxy_url')
+    if (proxyUrl.length === 0) {
+      proxyUrl = undefined
+    }
+
+    let proxyUsername = core.getInput('proxy_username')
+    if (proxyUsername.length === 0) {
+      proxyUsername = undefined
+    }
+
+    let proxyPassword = core.getInput('proxy_password')
+    if (proxyPassword.length === 0) {
+      proxyPassword = undefined
+    }
+
     const maxParallelRuns = Number(maxParallelRunsStr)
 
     const issueNumber = github.context.issue.number
@@ -71,7 +87,10 @@ export async function run(): Promise<void> {
       secretKey,
       settings: {
         cotesterConvexUrl: url,
-        maxParallelRuns
+        maxParallelRuns,
+        proxyUrl,
+        proxyUsername,
+        proxyPassword
       }
     })
     core.info(`Test execution result: ${JSON.stringify(testExecutionResult)}`)

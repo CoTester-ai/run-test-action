@@ -20,6 +20,15 @@ inputs:
   max_parallel_runs:
     description: 'Maximum amount of parallel tests runs'
     required: false
+  proxy_url:
+    description: 'Proxy url to use for the tests'
+    required: false
+  proxy_username:
+    description: 'Proxy username to use for the tests'
+    required: false
+  proxy_password:
+    description: 'Proxy password to use for the tests'
+    required: false
 runs:
   using: 'node20'
   main: 'dist/index.js'

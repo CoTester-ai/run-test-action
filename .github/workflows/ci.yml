@@ -66,5 +66,8 @@ jobs:
           PWDEBUG: console
         with:
           secretKey: ${{ secrets.SECRET_KEY }}
-          project: 'cotesterai'
+          project: 'ifconfig'
           group: 'smoke'
+          proxy_url: ${{ secrets.PROXY_URL }}
+          proxy_username: ${{ secrets.PROXY_USERNAME }}
+          proxy_password: ${{ secrets.PROXY_PASSWORD }}
